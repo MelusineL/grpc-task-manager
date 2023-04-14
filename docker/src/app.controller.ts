@@ -1,15 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { AppService } from './app.service';
-import { GrpcMethod } from '@nestjs/microservices';
+import { GrpcMethod, RpcException } from '@nestjs/microservices';
 import {
+  AttackHeroRequest,
+  AttackHeroResponse,
   CreateHeroRequest,
   CreateHeroResponse,
+  FetchHeroRequest,
+  FetchHeroResponse,
   HelloReply,
   HelloRequest,
-  Hero,
 } from './stub/hero/v1alpha/hero';
-
-const heroList: Hero[] = [];
+import { Metadata, status } from '@grpc/grpc-js';
 
 @Controller()
 export class AppController {
@@ -23,13 +25,82 @@ export class AppController {
   }
 
   @GrpcMethod('HeroService')
-  createHero(req: CreateHeroRequest): CreateHeroResponse {
-    const hero = { ...req, id: heroList.length + 1, hp: 100 };
+  async createHero(req: CreateHeroRequest): Promise<CreateHeroResponse> {
+    try {
+      const hero = await this.appService.createHero({
+        name: req.name,
+        power: req.power,
+      });
 
-    heroList.push(hero);
+      return {
+        hero,
+      };
+    } catch (error) {
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: error.message,
+      });
+    }
+  }
+
+  @GrpcMethod('HeroService')
+  async fetchHero(
+    req: FetchHeroRequest,
+    metadata: Metadata,
+  ): Promise<FetchHeroResponse> {
+    try {
+      const token = metadata.get('authorization')[0] as string;
+      const res = await this.appService.validateJwt(token);
+      console.log({ res });
+      if (req.id) {
+        const hero = await this.appService.hero({ id: req.id });
+
+        return { heroes: [hero] };
+      }
+
+      const heroes = await this.appService.heroes({});
+
+      return {
+        heroes,
+      };
+    } catch (error) {
+      throw new RpcException({
+        code: status.INTERNAL,
+        message: error.message,
+      });
+    }
+  }
+
+  @GrpcMethod('HeroService')
+  async attackHero(req: AttackHeroRequest): Promise<AttackHeroResponse> {
+    const attacker = await this.appService.hero({ id: req.attackingId });
+    if (!attacker) {
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: 'Attacker not found with id: ' + req.attackingId,
+      });
+    }
+
+    let defender = await this.appService.hero({ id: req.defendingId });
+    if (!defender) {
+      throw new RpcException({
+        code: status.NOT_FOUND,
+        message: 'Defender not found with id: ' + req.defendingId,
+      });
+    }
+
+    defender.hp -= attacker.power;
+
+    defender = await this.appService.updateHero({
+      where: { id: defender.id },
+      data: {
+        hp: defender.hp,
+      },
+    });
 
     return {
-      hero,
+      attackingHero: attacker,
+      defendingHero: defender,
     };
   }
 }
