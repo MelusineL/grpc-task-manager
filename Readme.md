@@ -1,5 +1,10 @@
 # gRPC Task Manager
 
+## Choix architectural
+
+Il y avait 2 possibilités : tout stocker dans la tâches et l'API n'a qu'un rôle utilitaire (au moment de la création) ou ne stocker qu'un ID dans la tâche et enregistrer l'objet dans l'API.
+Pour la simplicité, la solution choisie est la deuxième, mais en situation réelle d'une application c'est probablement la première qui l'emporterait.
+
 ## Installation
 
 ### Create the docker network
