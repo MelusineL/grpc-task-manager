@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package location;
+
+service LocationService {
+  rpc AddLocation(AddLocationRequest) returns (AddLocationResponse);
+  rpc RemoveLocation(RemoveLocationRequest) returns (RemoveLocationResponse);
+  rpc EditLocation(EditLocationRequest) returns (EditLocationResponse);
+}
+
+message Location {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+}
+
+message AddLocationRequest {
+  string name = 1;
+  string description = 2;
+}
+
+message AddLocationResponse {
+  Location location = 1;
+}
+
+message RemoveLocationRequest {
+  int32 id = 1;
+}
+
+message RemoveLocationResponse {
+  string message = 1;
+}
+
+message EditLocationRequest {
+  int32 id = 1;
+  string name = 1;
+  string description = 2;
+}
+
+message EditLocationResponse {
+  Location location = 1;
+}

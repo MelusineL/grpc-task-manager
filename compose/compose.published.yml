@@ -70,7 +70,7 @@ services:
   front:
     image: mohammaddocker/tm-front
     environment:
-      - secure=true
+      - secure=false
       - FRONT_CERT=/certs/front.pem
       - FRONT_KEY=/certs/front-key.pem
       - PORT=3000
