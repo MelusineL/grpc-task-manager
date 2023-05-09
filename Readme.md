@@ -1,5 +1,10 @@
 # gRPC Task Manager
 
+## Choix architectural
+
+Il y avait 2 possibilités : tout stocker dans la tâches et l'API n'a qu'un rôle utilitaire (au moment de la création) ou ne stocker qu'un ID dans la tâche et enregistrer l'objet dans l'API.
+Pour la simplicité, la solution choisie est la deuxième, mais en situation réelle d'une application c'est probablement la première qui l'emporterait.
+
 ## Installation
 
 ### Create the docker network
@@ -22,7 +27,7 @@ Set the .env :
 MYSQL_URL="mysql://root:passwd@localhost:3306/user"
 insecure=true
 NODE_ENV=development
-JAEGER_URL="http://localhost:14268/api/traces"
+JAEGER_URL="http://localhost:4318/v1/traces"
 HEALTH_PORT=3001
 AUTH_API_URL="localhost:4003"
 ```
@@ -39,8 +44,7 @@ PORT=4003
 USER_API_URL="localhost:4002"
 JWT_SECRET="super-secret"
 insecure=true
-JAEGER_URL="http://localhost:14268/api/traces"
-ETCD_URL="http://localhost:8000"
+JAEGER_URL="http://localhost:4318/v1/traces"
 HEALTH_PORT=3002
 ```
 
@@ -85,3 +89,8 @@ USER_API_URL=localhost:4000
 ```bash
 docker compose up -d
 ```
+
+| **Name**         | **Url**                |
+|------------------|------------------------|
+| project          | http://localhost:4000  |
+| observability ui | http://localhost:16686 |
