@@ -1,10 +1,18 @@
 import { toJson } from '$src/lib/helper/userDto';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ cookies, locals }) => {
+export const GET: RequestHandler = async ({ cookies, locals, url }) => {
+	const user = cookies.get('user');
+	if (!user) {
+		throw new Error('user not found in cookie');
+	}
+	const buffer = Buffer.from(user, 'base64');
+	const str = buffer.toString('utf-8');
+	const { email } = JSON.parse(str);
+	
 	const res = await locals.userClient.find(
 		{
-			email: 'moha@med.com'
+			email
 		} as any,
 		{
 			meta: {

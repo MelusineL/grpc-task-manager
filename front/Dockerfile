@@ -1,6 +1,6 @@
 FROM node:18-slim
 
-RUN npm install -g pnpm nodemon
+RUN npm install -g pnpm 
 
 WORKDIR /app
 
@@ -13,4 +13,4 @@ COPY . .
 
 ENV NODE_ENV=production
 
-CMD pnpm build:node && nodemon build/index.js
+CMD pnpm build:node && node build/index.js
