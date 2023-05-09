@@ -9,34 +9,33 @@ service LocationService {
 }
 
 message Location {
-  int32 id = 1;
-  string name = 2;
-  string description = 3;
+  string id = 1;
+  string task_id = 2;
+  string label = 3;
+  float x = 4;
+  float y = 5;
+  string context = 6;
 }
 
 message AddLocationRequest {
-  string name = 1;
-  string description = 2;
+  string search = 1;
+  string task_id = 2;
 }
-
 message AddLocationResponse {
   Location location = 1;
 }
 
 message RemoveLocationRequest {
-  int32 id = 1;
+  string id = 1;
 }
-
 message RemoveLocationResponse {
-  string message = 1;
+  Location location = 1;
 }
 
 message EditLocationRequest {
-  int32 id = 1;
-  string name = 1;
-  string description = 2;
+  string search = 1;
+  int32 id = 2;
 }
-
 message EditLocationResponse {
   Location location = 1;
 }
